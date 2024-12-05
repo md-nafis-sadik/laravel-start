@@ -9,7 +9,7 @@ class EmployeeController extends Controller
 {
     public function index()
     {
-        $employees = Employee::all();
+        $employees = Employee::latest()->get();
         return view('employees.index', compact('employees'));
     }
 
@@ -19,29 +19,28 @@ class EmployeeController extends Controller
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'name' => 'required',
-        'email' => 'required|email|unique:employees',
-        'position' => 'required',
-        'salary' => 'required|numeric',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Image validation
-    ]);
+    {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:employees',
+            'position' => 'required',
+            'salary' => 'required|numeric',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Image validation
+        ]);
 
-    // Handle image upload
-    $imagePath = $request->file('image') ? $request->file('image')->store('employees', 'public') : null;
+        // Handle image upload
+        $imagePath = $request->file('image') ? $request->file('image')->store('employees', 'public') : null;
 
-    Employee::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'position' => $request->position,
-        'salary' => $request->salary,
-        'image' => $imagePath, // Save the image path
-    ]);
+        Employee::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'position' => $request->position,
+            'salary' => $request->salary,
+            'image' => $imagePath, // Save the image path
+        ]);
 
-    return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
-}
-
+        return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
+    }
 
     public function show(Employee $employee)
     {
@@ -54,28 +53,28 @@ class EmployeeController extends Controller
     }
 
     public function update(Request $request, Employee $employee)
-{
-    $request->validate([
-        'name' => 'required',
-        'email' => 'required|email|unique:employees,email,' . $employee->id,
-        'position' => 'required',
-        'salary' => 'required|numeric',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-    ]);
+    {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:employees,email,' . $employee->id,
+            'position' => 'required',
+            'salary' => 'required|numeric',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
 
-    // Handle image upload (if a new image is uploaded)
-    $imagePath = $request->file('image') ? $request->file('image')->store('employees', 'public') : $employee->image;
+        // Handle image upload (if a new image is uploaded)
+        $imagePath = $request->file('image') ? $request->file('image')->store('employees', 'public') : $employee->image;
 
-    $employee->update([
-        'name' => $request->name,
-        'email' => $request->email,
-        'position' => $request->position,
-        'salary' => $request->salary,
-        'image' => $imagePath,
-    ]);
+        $employee->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'position' => $request->position,
+            'salary' => $request->salary,
+            'image' => $imagePath,
+        ]);
 
-    return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
-}
+        return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
+    }
 
     public function destroy(Employee $employee)
     {

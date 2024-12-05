@@ -1,11 +1,20 @@
 <?php
 
+use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmployeeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::controller(SocialiteController::class)->group(function () {
+    Route::get('auth/google',  'googleLogin')->name('auth.google');
+    Route::get('auth/google-callback', 'googleAuthentication')->name('auth.google-callback');
+
+    Route::get('auth/facebook', [SocialiteController::class, 'facebookLogin'])->name('auth.facebook');
+Route::get('auth/facebook-callback', [SocialiteController::class, 'facebookAuthentication'])->name('auth.facebook-callback');
 });
 
 Route::get('/dashboard', function () {
